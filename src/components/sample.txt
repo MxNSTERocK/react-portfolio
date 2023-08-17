@@ -1,0 +1,935 @@
+about
+import { React } from "react";
+import { Tilt } from "react-tilt";
+import { motion } from "framer-motion";
+
+import { styles } from "../styles";
+import { services } from "../constants";
+import { SectionWrapper } from "../hoc";
+import { fadeIn, textVariant } from "../utils/motion";
+
+const ServiceCard = ({ index, title, icon }) => (
+  <Tilt className="xs:w-[250px] w-full">
+    <motion.div
+      variants={fadeIn("right", "spring", index * 0.5, 0.75)}
+      className="w-full bg-white p-[1px] rounded-[20px] shadow-card"
+    >
+      <div
+        options={{
+          max: 45,
+          scale: 1,
+          speed: 450,
+        }}
+        className="bg-tertiary rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col"
+      >
+        <img
+          src={icon}
+          alt="web-development"
+          className="w-16 h-16 object-contain"
+        />
+
+        <h3 className="text-white text-[20px] font-bold text-center">
+          {title}
+        </h3>
+      </div>
+    </motion.div>
+  </Tilt>
+);
+
+const About = () => {
+  return (
+    <>
+      <motion.div variants={textVariant()}>
+        <p className={styles.sectionSubText}>Introduction</p>
+        <h2 className={styles.sectionHeadText}>Overview.</h2>
+      </motion.div>
+
+      <motion.p
+        variants={fadeIn("", "", 0.1, 1)}
+        className="mt-4 text-secondary text-[17px] max-w-3xl leading-[30px]"
+      >
+        I am a web developer seeking to refine my skills in the realm of web
+        development. I have a strong aptitude for rapid learning and possess a
+        keen willingness to acquire new knowledge, particularly in relation to
+        emerging technologies. I am enthusiastic about staying up-to-date with
+        the latest advancements in the field and leveraging them to enhance my
+        proficiency.
+      </motion.p>
+
+      <div className="mt-20 flex flex-wrap gap-10">
+        {services.map((service, index) => (
+          <ServiceCard key={service.title} index={index} {...service} />
+        ))}
+      </div>
+    </>
+  );
+};
+
+export default SectionWrapper(About, "about");
+
+
+contact
+import React, { useRef, useState } from "react";
+import { motion } from "framer-motion";
+import emailjs from "@emailjs/browser";
+
+import { styles } from "../styles";
+import { EarthCanvas } from "./canvas";
+import { SectionWrapper } from "../hoc";
+import { slideIn } from "../utils/motion";
+
+const Contact = () => {
+  const formRef = useRef();
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { target } = e;
+    const { name, value } = target;
+
+    setForm({
+      ...form,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    emailjs
+      .send(
+        import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
+        {
+          from_name: form.name,
+          to_name: "JavaScript Mastery",
+          from_email: form.email,
+          to_email: "sujata@jsmastery.pro",
+          message: form.message,
+        },
+        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
+      )
+      .then(
+        () => {
+          setLoading(false);
+          alert("Thank you. I will get back to you as soon as possible.");
+
+          setForm({
+            name: "",
+            email: "",
+            message: "",
+          });
+        },
+        (error) => {
+          setLoading(false);
+          console.error(error);
+
+          alert("Ahh, something went wrong. Please try again.");
+        }
+      );
+  };
+
+  return (
+    <div
+      className={`xl:mt-12 flex xl:flex-row flex-col-reverse gap-10 overflow-hidden`}
+    >
+      <motion.div
+        variants={slideIn("left", "tween", 0.2, 1)}
+        className='flex-[0.75] bg-black-100 p-8 rounded-2xl'
+      >
+        <p className={styles.sectionSubText}>Get in touch</p>
+        <h3 className={styles.sectionHeadText}>Contact.</h3>
+
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className='mt-12 flex flex-col gap-8'
+        >
+          <label className='flex flex-col'>
+            <span className='text-white font-medium mb-4'>Your Name</span>
+            <input
+              type='text'
+              name='name'
+              value={form.name}
+              onChange={handleChange}
+              placeholder="What's your good name?"
+              className='bg-blue-500 py-4 px-6 placeholder:text-white text-white rounded-lg outline-none border-none font-medium'
+            />
+          </label>
+          <label className='flex flex-col'>
+            <span className='text-white font-medium mb-4'>Your email</span>
+            <input
+              type='email'
+              name='email'
+              value={form.email}
+              onChange={handleChange}
+              placeholder="What's your web address?"
+              className='bg-blue-500 py-4 px-6 placeholder:text-white text-white rounded-lg outline-none border-none font-medium'
+            />
+          </label>
+          <label className='flex flex-col'>
+            <span className='text-white font-medium mb-4'>Your Message</span>
+            <textarea
+              rows={7}
+              name='message'
+              value={form.message}
+              onChange={handleChange}
+              placeholder='What you want to say?'
+              className='bg-blue-500 py-4 px-6 placeholder:text-white text-white rounded-lg outline-none border-none font-medium'
+            />
+          </label>
+
+          <button
+            type='submit'
+            className='bg-tertiary py-3 px-8 rounded-xl outline-none w-fit text-white font-bold shadow-md shadow-primary
+            bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300 ml-auto'
+          >
+            {loading ? "Sending..." : "Send"}
+          </button>
+        </form>
+      </motion.div>
+
+      <motion.div
+        variants={slideIn("right", "tween", 0.2, 1)}
+        className='xl:flex-1 xl:h-auto md:h-[550px] h-[350px]'
+      >
+        <EarthCanvas />
+      </motion.div>
+    </div>
+  );
+};
+
+export default SectionWrapper(Contact, "contact");
+
+
+
+experience
+import React from "react";
+import {
+  VerticalTimeline,
+  VerticalTimelineElement,
+} from "react-vertical-timeline-component";
+import { motion } from "framer-motion";
+
+import "react-vertical-timeline-component/style.min.css";
+
+import { styles } from "../styles";
+import { experiences } from "../constants";
+import { SectionWrapper } from "../hoc";
+import { textVariant } from "../utils/motion";
+
+const ExperienceCard = ({ experience }) => {
+  return (
+    <VerticalTimelineElement
+      contentStyle={{
+        background: "#1d1836",
+        color: "#fff",
+      }}
+      contentArrowStyle={{ borderRight: "7px solid  #232631" }}
+      date={experience.date}
+      iconStyle={{ background: experience.iconBg }}
+      icon={
+        <div className='flex justify-center items-center w-full h-full'>
+          <img
+            src={experience.icon}
+            alt={experience.company_name}
+            className='w-[60%] h-[60%] object-contain'
+          />
+        </div>
+      }
+    >
+      <div>
+        <h3 className='text-white text-[24px] font-bold'>{experience.title}</h3>
+        <p
+          className='text-secondary text-[16px] font-semibold'
+          style={{ margin: 0 }}
+        >
+          {experience.company_name}
+        </p>
+      </div>
+
+      <ul className='mt-5 list-disc ml-5 space-y-2'>
+        {experience.points.map((point, index) => (
+          <li
+            key={`experience-point-${index}`}
+            className='text-white-100 text-[14px] pl-1 tracking-wider'
+          >
+            {point}
+          </li>
+        ))}
+      </ul>
+    </VerticalTimelineElement>
+  );
+};
+
+const Experience = () => {
+  return (
+    <>
+      <motion.div variants={textVariant()}>
+        <p className={`${styles.sectionSubText} text-center`}>
+          What I have done so far
+        </p>
+        <h2 className={`${styles.sectionHeadText} text-center`}>
+          Work Experience.
+        </h2>
+      </motion.div>
+
+      <div className='mt-20 flex flex-col'>
+        <VerticalTimeline>
+          {experiences.map((experience, index) => (
+            <ExperienceCard
+              key={`experience-${index}`}
+              experience={experience}
+            />
+          ))}
+        </VerticalTimeline>
+      </div>
+    </>
+  );
+};
+
+export default SectionWrapper(Experience, "work");
+
+
+
+hero
+import { motion } from "framer-motion";
+import { styles } from "../styles";
+import { ComputersCanvas } from "./canvas";
+import { useEffect, useState } from "react";
+import { TypeAnimation } from "react-type-animation";
+
+const Hero = () => {
+  const [glitch, setGlitch] = useState(false);
+
+  useEffect(() => {
+    const glitchInterval = setInterval(() => {
+      setGlitch((prevGlitch) => !prevGlitch);
+    }, 200); // Adjust the interval to control glitch speed
+
+    return () => clearInterval(glitchInterval);
+  }, []);
+
+  return (
+    <section className={`relative w-full h-screen mx-auto`}>
+      <div
+        className={`absolute inset-0 top-[120px]  max-w-7xl mx-auto ${styles.paddingX} flex flex-row items-start gap-5`}
+      >
+        <div>
+          <h1 className={`${styles.heroHeadText} text-white`}>
+            Hi, I'm{" "}
+            <motion.span className={`text-[#ff0000] ${glitch ? "glitch" : ""}`}>
+              <TypeAnimation
+                sequence={[
+                  "",
+                  200,
+                  "R",
+                  200,
+                  "RO",
+                  200,
+                  "ROL",
+                  200,
+                  "ROL",
+                  200,
+                  "ROLLY",
+                  3000,
+                ]}
+                wrapper="span"
+                speed={50}
+                style={{ fontSize: "1em", display: "inline-block" }}
+                repeat={Infinity}
+              />
+            </motion.span>
+          </h1>
+          <p className={`${styles.heroSubText} mt-1 text-white-10`}>
+            <i>
+              “Digital design is like painting,{" "}
+              <br className="sm:block hidden" />
+              except the paint never dries.” <br className="sm:block hidden" />-
+              Neville Brody{" "}
+            </i>
+          </p>
+        </div>
+      </div>
+
+      <ComputersCanvas />
+
+      {/* <div className="absolute xs:bottom-10 bottom-32 w-full flex justify-center items-center">
+        <a href="#about">
+          <div className="w-[35px] h-[64px] rounded-3xl border-4 border-secondary flex justify-center items-start p-2">
+            <motion.div
+              animate={{
+                y: [0, 24, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                repeatType: "loop",
+              }}
+              className="w-3 h-3 rounded-full bg-secondary mb-1"
+            />
+          </div>
+        </a>
+      </div> */}
+    </section>
+  );
+};
+
+export default Hero;
+
+
+loader
+import { Html, useProgress } from "@react-three/drei";
+
+const CanvasLoader = () => {
+  const { progress } = useProgress();
+  return (
+    <Html
+      as='div'
+      center
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+      }}
+    >
+      <span className='canvas-loader'></span>
+      <p
+        style={{
+          fontSize: 14,
+          color: "#F1F1F1",
+          fontWeight: 800,
+          marginTop: 40,
+        }}
+      >
+        {progress.toFixed(2)}%
+      </p>
+    </Html>
+  );
+};
+
+export default CanvasLoader;
+
+
+
+
+navbar
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
+import { styles } from "../styles";
+import { navLinks } from "../constants";
+import { logo, menu, close } from "../assets";
+
+const Navbar = () => {
+  const [active, setActive] = useState("");
+  const [toggle, setToggle] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      if (scrollTop > 100) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <nav
+      className={`${
+        styles.paddingX
+      } w-full flex items-center py-5 fixed top-0 z-20 ${
+        scrolled ? "bg-primary" : "bg-transparent"
+      }`}
+    >
+      <div className='w-full flex justify-between items-center max-w-7xl mx-auto'>
+        <Link
+          to='/'
+          className='flex items-center gap-2'
+          onClick={() => {
+            setActive("");
+            window.scrollTo(0, 0);
+          }}
+        >
+          <img src={logo} alt='logo' className='w-9 h-9 object-contain' />
+          <p className='text-white text-[18px] font-bold cursor-pointer flex '>
+            Adrian &nbsp;
+            <span className='sm:block hidden'> | JavaScript Mastery</span>
+          </p>
+        </Link>
+
+        <ul className='list-none hidden sm:flex flex-row gap-10'>
+          {navLinks.map((nav) => (
+            <li
+              key={nav.id}
+              className={`${
+                active === nav.title ? "text-white" : "text-secondary"
+              } hover:text-white text-[18px] font-medium cursor-pointer`}
+              onClick={() => setActive(nav.title)}
+            >
+              <a href={`#${nav.id}`}>{nav.title}</a>
+            </li>
+          ))}
+        </ul>
+
+        <div className='sm:hidden flex flex-1 justify-end items-center'>
+          <img
+            src={toggle ? close : menu}
+            alt='menu'
+            className='w-[28px] h-[28px] object-contain'
+            onClick={() => setToggle(!toggle)}
+          />
+
+          <div
+            className={`${
+              !toggle ? "hidden" : "flex"
+            } p-6 black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[140px] z-10 rounded-xl`}
+          >
+            <ul className='list-none flex justify-end items-start flex-1 flex-col gap-4'>
+              {navLinks.map((nav) => (
+                <li
+                  key={nav.id}
+                  className={`font-poppins font-medium cursor-pointer text-[16px] ${
+                    active === nav.title ? "text-white" : "text-secondary"
+                  }`}
+                  onClick={() => {
+                    setToggle(!toggle);
+                    setActive(nav.title);
+                  }}
+                >
+                  <a href={`#${nav.id}`}>{nav.title}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
+
+
+
+technologies
+import React from "react";
+
+import { BallCanvas } from "./canvas";
+import { SectionWrapper } from "../hoc";
+import { technologies } from "../constants";
+
+const Tech = () => {
+  return (
+    <div>
+      <h1 className="text-center text-2xl font-bold mb-6">
+        My Technologies I Know
+      </h1>
+      <div className="flex flex-row flex-wrap justify-center gap-10">
+        {technologies.map((technology) => (
+          <div className="w-25 h-25 bg-tertiary-800" key={technology.name}>
+            <BallCanvas icon={technology.icon} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default SectionWrapper(Tech, "");
+
+
+works
+import React from "react";
+import { Tilt } from "react-tilt";
+import { motion } from "framer-motion";
+
+import { styles } from "../styles";
+import { php } from "../assets";
+import { SectionWrapper } from "../hoc";
+import { projects } from "../constants";
+import { fadeIn, textVariant } from "../utils/motion";
+
+const ProjectCard = ({
+  index,
+  name,
+  description,
+  tags,
+  image,
+  source_code_link,
+}) => {
+  return (
+    <motion.div variants={fadeIn("up", "tween", index * 0.5, 0.75)}>
+      <Tilt
+        options={{
+          max: 45,
+          scale: 1,
+          speed: 450,
+        }}
+        className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full"
+      >
+
+        <div className="relative w-full h-[230px]">
+          <img
+            src={image}
+            alt="project_image"
+            className="w-full h-full object-cover rounded-2xl"
+          />
+
+          <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
+            <div
+              onClick={() => window.open(source_code_link, "_blank")}
+              className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
+            >
+              <img
+                src={php}
+                alt="source code"
+                className="w-1/2 h-1/2 object-contain"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <h3 className="text-white font-bold text-[24px]">{name}</h3>
+          <p className="mt-2 text-secondary text-[14px]">{description}</p>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <p
+              key={`${name}-${tag.name}`}
+              className={`text-[14px] ${tag.color}`}
+            >
+              #{tag.name}
+            </p>
+          ))}
+        </div>
+      </Tilt>
+    </motion.div>
+  );
+};
+
+const Works = () => {
+  return (
+    <>
+      <motion.div variants={textVariant()}>
+        <p className={`${styles.sectionSubText} `}>My work</p>
+        <h2 className={`${styles.sectionHeadText}`}>Projects.</h2>
+      </motion.div>
+
+      <div className="w-full flex">
+        <motion.p
+          variants={fadeIn("", "", 0.1, 1)}
+          className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
+        >
+          Following projects showcases my skills and experience through
+          real-world examples of my work. Each project is briefly described with
+          links to code repositories and live demos in it. It reflects my
+          ability to solve complex problems, work with different technologies,
+          and manage projects effectively.
+        </motion.p>
+      </div>
+
+      {/* Three component */}
+      {/* <div className='mt-20 flex flex-wrap gap-7 text-center'>
+        {projects.map((project, index) => (
+          <ProjectCard key={`project-${index}`} index={index} {...project} />
+        ))}
+      </div> */}
+
+      <div className="mt-20 flex flex-wrap gap-7 text-center justify-center mx-auto">
+        {projects.map((project, index) => (
+          <ProjectCard key={`project-${index}`} index={index} {...project} />
+        ))}
+      </div>
+    </>
+  );
+};
+
+export default SectionWrapper(Works, "");
+
+
+BallCanvas
+import React, { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import {
+  Decal,
+  Float,
+  OrbitControls,
+  Preload,
+  useTexture,
+} from "@react-three/drei";
+
+import CanvasLoader from "../Loader";
+
+const Ball = (props) => {
+  const [decal] = useTexture([props.imgUrl]);
+
+  return (
+    <Float speed={0} rotationIntensity={1} floatIntensity={5}>
+      <ambientLight intensity={8} />
+      <directionalLight position={[0, 0, 0]} />
+      <group>
+        {/* Black border */}
+        <mesh scale={2.75}>
+          <boxGeometry args={[2.1, 2.1, 2.1]} />
+          <meshStandardMaterial color="#260B73" flatShading />
+        </mesh>
+
+        {/* White square */}
+        <mesh scale={2.75}>
+          <boxGeometry args={[2, 2, 2]} />
+          <meshStandardMaterial color="#F85A38" flatShading />
+          <Decal position={[0, 0, 1]} rotation={[2 * Math.PI, 0, 6.25]} scale={1} map={decal} flatShading />
+        </mesh>
+      </group>
+    </Float>
+  );
+};
+
+const BallCanvas = ({ icon }) => {
+  return (
+    <Canvas frameloop="demand" dpr={[2, 2]} gl={{ preserveDrawingBuffer: true }}>
+      <Suspense fallback={<CanvasLoader />}>
+        <OrbitControls enableZoom={false} enableRotate={false} enablePan={false} />
+        <Ball imgUrl={icon} />
+      </Suspense>
+
+      <Preload all />
+    </Canvas>
+  );
+};
+
+export default BallCanvas;
+
+
+ComputersCanvas
+import React, { Suspense, useEffect, useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
+
+import CanvasLoader from "../Loader";
+
+const Computers = ({ isMobile }) => {
+  const computer = useGLTF("./desktop_pc/scene.gltf");
+
+  const [rotation, setRotation] = useState([0, 0, 0]);
+  const [rotationDirection, setRotationDirection] = useState(1); // 1 for clockwise, -1 for counterclockwise
+
+  useEffect(() => {
+    // Function to update the rotation continuously
+    const updateRotation = () => {
+      setRotation((prevRotation) => [
+        prevRotation[0] + 0.005 * rotationDirection, // Rotation around the X-axis
+        prevRotation[1] + 0.005 * rotationDirection, // Rotation around the Y-axis
+        prevRotation[2] // No rotation around the Z-axis (keeps it upright)
+      ]);
+    };
+
+    // Start updating the rotation
+    const rotationInterval = setInterval(updateRotation, 16); // 60 FPS
+
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(rotationInterval);
+  }, [rotationDirection]);
+
+  useEffect(() => {
+    // Function to update the rotation direction randomly after completing one full rotation
+    const updateRotationDirection = () => {
+      setRotationDirection(Math.random() > 0.5 ? 1 : -1); // Randomly set direction to 1 (clockwise) or -1 (counterclockwise)
+    };
+
+    // Start updating the rotation direction after one full rotation (every 360 degrees)
+    const rotationDirectionInterval = setInterval(updateRotationDirection, 60000 / 0.005); // Approximately after one full rotation
+
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(rotationDirectionInterval);
+  }, []);
+
+  // Adjust the scale and position based on the isMobile variable
+  const scaleValue = isMobile ? 0.7 : 0.75;
+  const positionValue = isMobile ? [300, -3000, -2000] : [300, -55, -1.5];
+
+  return (
+    <mesh rotation={rotation}>
+      <hemisphereLight intensity={2} groundColor="black" />
+      <spotLight
+        position={[-200, 50, 10]}
+        angle={0.12}
+        penumbra={1}
+        intensity={1}
+        castShadow
+        shadow-mapSize={1024}
+      />
+      <pointLight intensity={1} />
+      <primitive
+        object={computer.scene}
+        scale={[scaleValue, scaleValue, scaleValue]} // Adjust the scale
+        position={positionValue} // Adjust the position
+      />
+    </mesh>
+  );
+};
+
+const ComputersCanvas = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Add a listener for changes to the screen size
+    const mediaQuery = window.matchMedia("(max-width: 500px)");
+
+    // Set the initial value of the `isMobile` state variable
+    setIsMobile(mediaQuery.matches);
+
+    // Define a callback function to handle changes to the media query
+    const handleMediaQueryChange = (event) => {
+      setIsMobile(event.matches);
+    };
+
+    // Add the callback function as a listener for changes to the media query
+    mediaQuery.addEventListener("change", handleMediaQueryChange);
+
+    // Remove the listener when the component is unmounted
+    return () => {
+      mediaQuery.removeEventListener("change", handleMediaQueryChange);
+    };
+  }, []);
+
+  return (
+    <Canvas
+      frameloop="demand"
+      shadows
+      dpr={[1, 2]}
+      camera={{ position: [200, 300, 500], fov: 33 }}
+      gl={{ preserveDrawingBuffer: false }}
+    >
+      <Suspense fallback={<CanvasLoader />}>
+        <OrbitControls
+          enableZoom={false}
+          maxPolarAngle={Math.PI / 2}
+          minPolarAngle={Math.PI / 2}
+        />
+        <Computers isMobile={isMobile} />
+      </Suspense>
+
+      <Preload all />
+    </Canvas>
+  );
+};
+
+export default ComputersCanvas;
+
+
+EarthCanvas
+import React, { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
+
+import CanvasLoader from "../Loader";
+
+const Earth = () => {
+  const earth = useGLTF("./planet/scene.gltf");
+
+  return (
+    <primitive object={earth.scene} scale={[3, 3, 3]} position-y={0} rotation-y={0} />
+    // Adjust the scale values above (e.g., [3, 3, 3]) to make the icon bigger or smaller.
+  );
+};
+
+const EarthCanvas = () => {
+  return (
+    <Canvas
+      shadows
+      frameloop='demand'
+      dpr={[1, 2]}
+      gl={{ preserveDrawingBuffer: true }}
+      camera={{
+        fov: 45,
+        near: 0.1,
+        far: 200,
+        position: [-40, 30, 60],
+      }}
+    >
+      <ambientLight intensity={2} color="white" />
+      {/* Add other light sources if needed */}
+
+      <Suspense fallback={<CanvasLoader />}>
+        <OrbitControls
+          autoRotate
+          enableZoom={false}
+          maxPolarAngle={Math.PI / 2}
+          minPolarAngle={Math.PI / 2}
+        />
+        <Earth />
+
+        <Preload all />
+      </Suspense>
+    </Canvas>
+  );
+};
+
+export default EarthCanvas;
+
+
+starts
+import { useState, useRef, Suspense } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Points, PointMaterial, Preload } from "@react-three/drei";
+import * as random from "maath/random/dist/maath-random.esm";
+// import Planet from "./Planet";
+
+const Stars = (props) => {
+  const ref = useRef();
+  const [sphere] = useState(() => random.inSphere(new Float32Array(100000), { radius: 1.2 }));
+
+  useFrame((state, delta) => {
+    ref.current.rotation.x -= delta / 100;
+    ref.current.rotation.y -= delta / 100;
+  });
+
+  return (
+    <group rotation={[0, 0, Math.PI / 4]}>
+      <Points ref={ref} positions={sphere} stride={3} frustumCulled {...props}>
+        <PointMaterial
+          transparent
+          color='#eee'
+          size={0.001}
+          sizeAttenuation={true}
+          depthWrite={false}
+        />
+      </Points>
+    </group>
+  );
+}; 
+
+const StarsCanvas = () => {
+  return (
+    <div className='w-full h-auto absolute inset-0 z-[-1]'>
+      <Canvas camera={{ position: [0, 0, 1] }}>
+        <Suspense fallback={null}>
+          <Stars />
+          {/* <Planet position={[1.5, 0, -3]} color="orange" radius={0.1} /> */}
+        </Suspense>
+
+        <Preload all />
+      </Canvas>
+    </div>
+  );
+};
+
+export default StarsCanvas;
